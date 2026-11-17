@@ -16,9 +16,9 @@
  * `await field.ensureEncrypted()` aufgerufen werden, damit eine evtl.
  * noch laufende Verschlüsselung abgeschlossen ist.
  *
- * Konfiguration:
- *  - recipients: Array zusätzlicher Empfänger-Fingerprints (optional).
- *    Die eigenen aktiven Schlüssel des Nutzers werden immer ergänzt.
+ * Hinweis zur Umsetzung: ExtJS-Mixins überschreiben vorhandene Methoden
+ * der Zielklasse nicht. Die Feldklassen definieren daher setValue/getValue/
+ * getSubmitValue selbst und delegieren an die ed*-Methoden dieses Mixins.
  */
 Ext.define('Tualo.EncryptedData.field.Mixin', {
     extend: 'Ext.Mixin',
@@ -41,9 +41,10 @@ Ext.define('Tualo.EncryptedData.field.Mixin', {
         this.edLocked = true;
         this.edEnvelope = null;
         this.edPlainLoaded = false;
+        this.edSilent = false;
         this.edEncryptTask = new Ext.util.DelayedTask(this.edEncryptNow, this);
         this.edPending = null;
-        this.setEditable(false);
+        this.editable = false;
         this.on('change', this.onEdChange, this);
         this.on('blur', this.onEdBlur, this);
         this.on('afterrender', this.edUpdateTriggerUi, this);
@@ -51,44 +52,33 @@ Ext.define('Tualo.EncryptedData.field.Mixin', {
 
     /* ------------------------------------------------ Wert-Handling */
 
-    setValue: function (value) {
+    /**
+     * Bereitet setValue vor. Liefert null für Klartext-Durchreichung,
+     * sonst {value, editable} für den Elternaufruf.
+     */
+    edPrepareSetValue: function (value) {
         var Crypto = Tualo.EncryptedData.Crypto;
         if (Crypto.isEnvelope(value)) {
             this.edEnvelope = value;
             this.edPlainLoaded = false;
             this.edLocked = true;
-            this.edSilent = true;
-            this.callParent([this.lockedText]);
-            this.edSilent = false;
-            this.setEditable(false);
-            this.edUpdateTriggerUi();
-            return this;
+            return { value: this.lockedText, editable: false };
         }
         if (value === null || value === undefined || value === '') {
             this.edEnvelope = null;
             this.edPlainLoaded = true;
             this.edLocked = false;
-            this.edSilent = true;
-            this.callParent(['']);
-            this.edSilent = false;
-            this.setEditable(true);
-            this.edUpdateTriggerUi();
-            return this;
+            return { value: '', editable: true };
         }
-        // Klartext (z.B. Benutzereingabe im entriegelten Zustand)
-        return this.callParent([value]);
+        return null;
     },
 
-    getValue: function () {
-        if (this.edEnvelope !== null) return this.edEnvelope;
-        if (this.edLocked) return '';
-        var raw = this.callParent();
-        // Noch nicht verschlüsselter Neu-Inhalt: niemals Klartext liefern
-        return (raw === this.lockedText) ? '' : (this.edEnvelope || '');
-    },
-
-    getSubmitValue: function () {
-        return this.getValue();
+    /**
+     * Liefert den nach außen sichtbaren Wert: immer der Envelope,
+     * niemals Klartext.
+     */
+    edGetValue: function () {
+        return this.edEnvelope !== null ? this.edEnvelope : '';
     },
 
     /**

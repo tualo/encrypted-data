@@ -38,5 +38,24 @@ Ext.define('Tualo.EncryptedData.field.EncryptedField', {
                 this.edToggleLock();
             }
         }
+    },
+
+    setValue: function (value) {
+        var prepared = this.edPrepareSetValue(value);
+        if (prepared === null) return this.callParent([value]);
+        this.edSilent = true;
+        var result = this.callParent([prepared.value]);
+        this.edSilent = false;
+        this.setEditable(prepared.editable);
+        this.edUpdateTriggerUi();
+        return result;
+    },
+
+    getValue: function () {
+        return this.edGetValue();
+    },
+
+    getSubmitValue: function () {
+        return this.edGetValue();
     }
 });
