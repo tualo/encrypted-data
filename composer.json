@@ -1,0 +1,27 @@
+{
+  "name": "tualo/encrypted-data",
+  "description": "tualo - encrypted-data: clientseitig verschluesselte Datenelemente (RSA-OAEP + AES-GCM), private Schluessel verlassen nie den Browser",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Thomas Hoffmann",
+      "email": "thomas.hoffmann@tualo.de"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Tualo\\Office\\EncryptedData\\": "src/"
+    },
+    "files": [
+      "src/functions.php"
+    ]
+  },
+  "minimum-stability": "dev",
+  "require": {
+    "phpseclib/phpseclib": "^4.0.3",
+    "ramsey/uuid": "~4.9.0",
+    "tualo/tualopgp": ">=1.0"
+  },
+  "version": "1.0.0"
+}
