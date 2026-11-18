@@ -5,6 +5,7 @@ namespace Tualo\Office\EncryptedData\Routes;
 use Tualo\Office\Basic\TualoApplication as App;
 use Tualo\Office\Basic\Route as BasicRoute;
 use Ramsey\Uuid\Uuid;
+use Tualo\Office\EncryptedData\Scopes\EncryptedDataScope;
 
 /**
  * Verwaltung verschlüsselter Datenelemente.
@@ -17,7 +18,7 @@ class Data extends \Tualo\Office\Basic\RouteWrapper
 {
     public static function scope(): string
     {
-        return 'encrypted-data';
+        return EncryptedDataScope::identifier();
     }
 
     /**

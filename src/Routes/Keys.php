@@ -5,7 +5,9 @@ namespace Tualo\Office\EncryptedData\Routes;
 use Tualo\Office\Basic\TualoApplication as App;
 use Tualo\Office\Basic\Route as BasicRoute;
 use phpseclib4\Crypt\PublicKeyLoader;
-use phpseclib4\Crypt\RSA\PublicKey as RSAPublicKey;
+use phpseclib4\Crypt\RSA\PublicKey as RSAPublicKey; #
+
+use Tualo\Office\EncryptedData\Scopes\EncryptedDataKeysScope;
 
 /**
  * Schlüsselverwaltung.
@@ -18,7 +20,7 @@ class Keys extends \Tualo\Office\Basic\RouteWrapper
 {
     public static function scope(): string
     {
-        return 'encrypted-data';
+        return EncryptedDataKeysScope::identifier();
     }
 
     /**
