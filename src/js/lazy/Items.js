@@ -17,6 +17,13 @@ Ext.define('Tualo.EncryptedData.Items', {
     listeners: {
         boxReady: 'onReady'
     },
+
+    getWindowTitle: function () {
+        return 'Verschlüsselte Datenelemente';
+    },
+    getWindowIcon: function () {
+        return 'fa fa-lock';
+    },
     items: [{
         xtype: 'grid',
         reference: 'itemsgrid',

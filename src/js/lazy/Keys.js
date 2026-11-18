@@ -17,6 +17,12 @@ Ext.define('Tualo.EncryptedData.Keys', {
     listeners: {
         boxReady: 'onReady'
     },
+    getWindowTitle: function () {
+        return 'Schlüsselverwaltung';
+    },
+    getWindowIcon: function () {
+        return 'fa fa-key';
+    },
     items: [{
         xtype: 'grid',
         reference: 'keysgrid',
