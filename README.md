@@ -113,6 +113,34 @@ liefern JSON (`success`, `msg`, ...).
 | `/encrypted-data/unshare` | POST | Empfänger entfernen (`id`, `fingerprint`), nur Besitzer. Rein organisatorisch, s. [Grenzen](#sicherheitsmodell-und-grenzen). |
 | `/encrypted-data/delete` | POST | Element löschen (`id`), nur Besitzer. |
 
+## CLI-Entschlüsselung
+
+Die Dateien in `tools/` rufen `/encrypted-data/get/<id>` ab und entschlüsseln
+das Ergebnis mit dem passenden privaten Schlüssel. Die heruntergeladene
+`.asc`-Datei enthält einen unverschlüsselten PKCS#8-PEM-RSA-Schlüssel; es ist
+kein OpenPGP-Schlüssel. `gpg` kann die Datenelemente daher nicht direkt
+entschlüsseln. Die Werkzeuge verwenden Node.js' eingebaute Kryptografie
+(RSA-OAEP mit SHA-256 und AES-256-GCM), ohne zusätzliche npm-Pakete.
+
+Mit einem `curl`-Cookie-Jar einer angemeldeten Sitzung:
+
+```sh
+./tools/get-and-decrypt.sh https://example.com APP_ID /path/to/private-key.asc /path/to/cookies.txt
+```
+
+Die entschlüsselte Nutzlast wird nach stdout geschrieben. Alternativ kann die
+JSON-Antwort separat gespeichert und offline entschlüsselt werden:
+
+```sh
+curl --fail --silent --show-error --cookie /path/to/cookies.txt \
+  https://example.com/encrypted-data/get/APP_ID > response.json
+./tools/decrypt-response.sh /path/to/private-key.asc response.json
+```
+
+`decrypt-response.sh` liest die JSON-Antwort auch von stdin, wenn keine
+Antwortdatei angegeben ist. Die private Schlüsseldatei wird nicht verändert
+oder an den Server übertragen.
+
 ## ExtJS-Steuerelemente
 
 Lazy-Klassen werden über `Ext.Loader` (`Tualo.EncryptedData` →

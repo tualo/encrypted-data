@@ -7,6 +7,7 @@ use Tualo\Office\Basic\Scope;
 class EncryptedDataScope extends Scope
 {
     protected static string $identifier = 'encrypted-data';
+
     protected static array $name = [
         'EN' => 'Encrypted Data',
         'DE' => 'Verschlüsselte Daten',
